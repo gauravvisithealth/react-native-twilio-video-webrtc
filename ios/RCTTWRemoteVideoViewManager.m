@@ -32,8 +32,10 @@
 
 + (RCTTWVideoTrackIdentifier *)RCTTWVideoTrackIdentifier:(id)json {
   RCTTWVideoTrackIdentifier *trackIdentifier = [[RCTTWVideoTrackIdentifier alloc] init];
-  trackIdentifier.participantSid = json[@"participantSid"];
-  trackIdentifier.videoTrackSid = json[@"videoTrackSid"];
+  if (json && json != [NSNull null] && [json isKindOfClass:[NSDictionary class]]) {
+    trackIdentifier.participantSid = json[@"participantSid"];
+    trackIdentifier.videoTrackSid = json[@"videoTrackSid"];
+  }
 
   return trackIdentifier;
 }
@@ -60,11 +62,13 @@ RCT_CUSTOM_VIEW_PROPERTY(scalesType, NSInteger, TVIVideoView) {
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(trackIdentifier, RCTTWVideoTrackIdentifier, TVIVideoView) {
-  if (json) {
+  if (json && json != [NSNull null]) {
     RCTTWVideoModule *videoModule = [self.bridge moduleForName:@"TWVideoModule"];
     RCTTWVideoTrackIdentifier *id = [RCTConvert RCTTWVideoTrackIdentifier:json];
 
-    [videoModule addParticipantView:view.subviews[0] sid:id.participantSid trackSid:id.videoTrackSid];
+    if (id.participantSid && id.videoTrackSid) {
+      [videoModule addParticipantView:view.subviews[0] sid:id.participantSid trackSid:id.videoTrackSid];
+    }
   }
 }
 
